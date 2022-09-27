@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include mirceanton.docker_swarm_deploy"
+      include_role:
+        name: "mirceanton.docker_swarm_deploy"
