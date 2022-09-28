@@ -1,38 +1,171 @@
-Role Name
-=========
+Ansible Role: Docker Stack Deploy
+=================================
 
-A brief description of the role goes here.
+An Ansible role that deploys a Stack to a Docker Swarm Cluster.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- a Docker Swarm cluster
+
+    In order to get docker installed on a remote host, take a look at the [mirceanton.docker](https://github.com/mirceanton/ansible_role-docker) role.
+
+    To get a basic single-node Swarm cluster going, it is as simple as adding the following task to your playbook:
+
+    ``` yaml
+    - name: Initialize The Docker Swarm
+      ansible.builtin.command:
+        cmd: docker swarm init
+    ```
+
+- The following python packages are required on the remote machine:
+  - setuptools
+  - requests
+  - docker
+  - jsondiff
+  - pyyaml
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- `docker_stack_deploy_name`:  
+  **Value Type**: string  
+  **Default value**: `example`  
+  **Description**:  
+    The name of the stack to deploy.  
+    The argument that would have been passed to the docker stack deploy command.
+
+- `docker_stack_deploy_state`:  
+  **Value Type**: string  
+  **Default value**: `present`  
+  **Description**:  
+    The state of the stack to deploy.  
+    Generally, this should be set to `present`.  
+    Set it to `absent` to do a docker stack rm.
+
+- `docker_stack_deploy_root_dir_path`:  
+  **Value Type**: string  
+  **Default value**: `/opt/example`  
+  **Description**:  
+    The path of the root data directory of the application.  
+    > NOTE: The role will expect the docker-compose.yml file to be here
+
+- `docker_stack_deploy_root_dir_state`:  
+  **Value Type**: string  
+  **Default value**: `directory`  
+  **Description**:  
+    The state of the root directory.  
+    Generally, this should be set to `directory`.  
+    Set it to `absent` to delete it.
+
+- `docker_stack_deploy_root_dir_owner` / `docker_stack_deploy_root_dir_group`:  
+  **Value Type**: string  
+  **Default value**: `root`  
+  **Description**:  
+    The user and group owners of the root dir  
+    Equivalent of the arguments passed to `chown`
+
+- `docker_stack_deploy_root_dir_mode`:  
+  **Value Type**: string  
+  **Default value**: `0777`  
+  **Description**:  
+    The permissions of the root data directory of the application.  
+    Equivalent to the arguments passed to `chmod`
+
+- `docker_stack_deploy_additional_dirs`:  
+  **Value Type**: `list(object)`  
+  **Default value**: `[]`  
+  **Description**:  
+    Any additional directories that might need to be created.  
+    Object structure:
+  - path:
+    - Required: true
+    - Value Type: `string`
+    - Default Value: N/A
+    - Description: The path is relative to the docker_stack_deploy_root_dir_path
+  - mode:
+    - Required: false
+    - Value Type: `string`
+    - Default Value: "0777
+    - Description: The permissions of the directory as passed to `chmod`
+  - owner:
+    - Required: false
+    - Value Type: `string`
+    - Default Value: "0777
+    - Description: The user owner of the directory as passed to `chown`
+  - group:
+    - Required: false
+    - Value Type: `string`
+    - Default Value: "0777
+    - Description: The group owner of the directory as passed to `chown`
+
+- `docker_stack_deploy_copy_files` / `docker_stack_deploy_template_files`:  
+  **Value Type**: `list(object)`  
+  **Default value**: `[]`  
+  **Description**:  
+    List of additional files that might need to be copied/templated over to the remote host.  
+    Object structure:
+  - src:
+    - Required: true
+    - Value Type: `string`
+    - Default Value: N/A
+    - Description: The source path on the local machine.
+  - dest:
+    - Required: true
+    - Value Type: `string`
+    - Default Value: N/A
+    - Description: The destination path on the remote machine, relative to docker_stack_deploy_root_dir_path.
+  - mode:
+    - Required: false
+    - Value Type: `string`
+    - Default Value: "0777
+    - Description: The permissions of the file as passed to `chmod`
+  - owner:
+    - Required: false
+    - Value Type: `string`
+    - Default Value: "0777
+    - Description: The user owner of the file as passed to `chown`
+  - group:
+    - Required: false
+    - Value Type: `string`
+    - Default Value: "0777
+    - Description: The group owner of the file as passed to `chown`
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role requires the `community.docker` collection to be installed.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+For the associated files and variables needed, take a look at the following files:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- `files/test-file.html`
+- `templates/test-file.yml.j2`
+- `vars/main.yml`
+
+The `converge` playbook in the `molecule/default` directory uses this role to deploy a basic nginx stack to a single node swarm cluster.
+
+``` yaml
+---
+- name: Deploy application
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: "Include mirceanton.docker_stack_deploy"
+      include_role:
+        name: "mirceanton.docker_stack_deploy"
+
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+A role developed by [Mircea-Pavel ANTON](https://www.mirceanton.com).
