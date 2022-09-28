@@ -2,6 +2,9 @@
 # Based on ansible-lint config
 extends: default
 
+ignore: |
+  .github/*
+
 rules:
   braces:
     max-spaces-inside: 1
@@ -23,11 +26,11 @@ rules:
     level: error
   hyphens:
     level: error
-  indentation: disable
+  indentation: enable
   key-duplicates: enable
   line-length: disable
-  new-line-at-end-of-file: disable
+  new-line-at-end-of-file: enable
   new-lines:
     type: unix
-  trailing-spaces: disable
-  truthy: disable
+  trailing-spaces: enable
+  truthy: enable
