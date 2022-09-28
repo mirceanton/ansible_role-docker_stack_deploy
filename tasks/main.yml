@@ -1,0 +1,41 @@
+---
+- name: "[{{ docker_stack_deploy_name }}]: Create Root Directory"
+  ansible.builtin.file:
+    path: "{{ docker_stack_deploy_root_dir_path }}"
+    state: "{{ docker_stack_deploy_root_dir_state | default('directory') }}"
+    owner: "{{ docker_stack_deploy_root_dir_owner | default('root') }}"
+    group: "{{ docker_stack_deploy_root_dir_group | default('root') }}"
+    mode: "{{ docker_stack_deploy_root_dir_mode | default('0777') }}"
+
+- name: "[{{ docker_stack_deploy_name }}]: Create Additional Directories"
+  ansible.builtin.file:
+    path: "{{ docker_stack_deploy_root_dir_path }}/{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode | default('0777') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+  loop: "{{ docker_stack_deploy_additional_dirs }}"
+
+- name: "[{{ docker_stack_deploy_name }}]: Copy File to Remote Host"
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ docker_stack_deploy_root_dir_path }}/{{ item.dest }}"
+    mode: "{{ item.mode | default('0777') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+  loop: "{{ docker_stack_deploy_copy_files }}"
+
+- name: "[{{ docker_stack_deploy_name }}]: Template File to Remote Host"
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ docker_stack_deploy_root_dir_path }}/{{ item.dest }}"
+    mode: "{{ item.mode | default('0777') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+  loop: "{{ docker_stack_deploy_template_files }}"
+
+- name: "[{{ docker_stack_deploy_name }}]: Deploy Stack"
+  community.docker.docker_stack:
+    name: "{{ docker_stack_deploy_name }}"
+    state: "{{ docker_stack_deploy_state | default('present') }}"
+    compose: [ "{{ docker_stack_deploy_root_dir_path }}/docker-compose.yml" ]

@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: "Include mirceanton.docker_stack_deploy"
+      include_role:
+        name: "mirceanton.docker_stack_deploy"

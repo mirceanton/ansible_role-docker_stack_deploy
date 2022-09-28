@@ -1,0 +1,28 @@
+---
+dependency:
+  name: galaxy
+  options:
+    ignore-certs: true
+    ignore-errors: true
+    requirements-file: requirements.yml
+
+driver:
+  name: docker
+
+provisioner:
+  name: ansible
+
+verifier:
+  name: ansible
+
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+
+platforms:
+  - name: swarm
+    image: antonmircea/dind-python
+    pre_build_image: true
+    privileged: true
+    command: ""

@@ -1,0 +1,12 @@
+---
+- name: "Check if directory exists: {{ item.path }}"
+  ansible.builtin.stat:
+    path: "{{ docker_stack_deploy_root_dir_path }}/{{ item.path }}"
+  register: __dir__
+- ansible.builtin.assert:
+    that:
+      - __dir__.stat.exists
+      - __dir__.stat.isdir
+      - __dir__.stat.gr_name == ( item.group | default('root') )
+      - __dir__.stat.pw_name == ( item.owner | default('root') )
+      - __dir__.stat.mode == ( item.mode | default('0777') )

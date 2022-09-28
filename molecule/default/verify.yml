@@ -1,0 +1,45 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  vars_files:
+    - ../../vars/main.yml
+
+  tasks:
+    - name: Make sure the root directory is created
+      ansible.builtin.stat:
+        path: "{{ docker_stack_deploy_root_dir_path }}"
+      register: __root_dir__
+    - ansible.builtin.assert:
+        that:
+          - __root_dir__.stat.exists
+          - __root_dir__.stat.isdir
+          - __root_dir__.stat.gr_name == (docker_stack_deploy_root_dir_group | default('root'))
+          - __root_dir__.stat.pw_name == (docker_stack_deploy_root_dir_owner | default('root'))
+          - __root_dir__.stat.mode == (docker_stack_deploy_root_dir_mode | default('0777'))
+
+    - name: Make sure the additional directories are there
+      include_tasks: verify-directory.yml
+      loop: "{{ docker_stack_deploy_additional_dirs }}"
+
+    - name: Make sure the copied files are there
+      include_tasks: verify-file.yml
+      loop: "{{ docker_stack_deploy_copy_files }}"
+
+    - name: Make sure the templated files are there
+      include_tasks: verify-file.yml
+      loop: "{{ docker_stack_deploy_template_files }}"
+
+    - name: Make sure the stack is deployed
+      ansible.builtin.shell:
+        cmd: docker stack ls | grep {{ docker_stack_deploy_name }} | wc -l
+      register: __command__
+    - ansible.builtin.assert:
+        that: __command__.stdout == "1"
+
+    - name: Verify that nginx is available
+      ansible.builtin.uri:
+        url: http://localhost:80
