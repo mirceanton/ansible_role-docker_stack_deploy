@@ -28,7 +28,7 @@
     - name: Make sure the copied files are there
       include_tasks: verify-file.yml
       loop: "{{ docker_stack_deploy_copy_files }}"
-      
+
     - name: Make sure the templated files are there
       include_tasks: verify-file.yml
       loop: "{{ docker_stack_deploy_template_files }}"
@@ -39,7 +39,7 @@
       register: __command__
     - ansible.builtin.assert:
         that: __command__.stdout == "1"
-    
+
     - name: Verify that nginx is available
       ansible.builtin.uri:
         url: http://localhost:80

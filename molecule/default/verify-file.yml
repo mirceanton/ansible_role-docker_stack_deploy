@@ -6,7 +6,7 @@
 - ansible.builtin.assert:
     that:
       - __file__.stat.exists
-      - __file__.stat.isreg 
+      - __file__.stat.isreg
       - __file__.stat.gr_name == ( item.group | default('root') )
       - __file__.stat.pw_name == ( item.owner | default('root') )
       - __file__.stat.mode == ( item.mode | default('0777') )
