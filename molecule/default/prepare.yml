@@ -1,0 +1,19 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Install required pip packages
+      ansible.builtin.pip:
+        name: "{{ item }}"
+      loop:
+        - setuptools
+        - requests
+        - docker
+        - jsondiff
+        - pyyaml
+
+    - name: Initialize The Docker Swarm
+      community.docker.docker_swarm:
+        state: present

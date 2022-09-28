@@ -1,0 +1,12 @@
+---
+- name: "Check if file exists: {{ item.dest }}"
+  ansible.builtin.stat:
+    path: "{{ docker_stack_deploy_root_dir_path }}/{{ item.dest }}"
+  register: __file__
+- ansible.builtin.assert:
+    that:
+      - __file__.stat.exists
+      - __file__.stat.isreg 
+      - __file__.stat.gr_name == ( item.group | default('root') )
+      - __file__.stat.pw_name == ( item.owner | default('root') )
+      - __file__.stat.mode == ( item.mode | default('0777') )
