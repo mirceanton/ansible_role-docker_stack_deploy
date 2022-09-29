@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.1
+
+* Removed default vars from role configuration. All vars are now required and lists are defaulted to `[]`.
+
 ## v1.0.0
 
 * Initial release of the `mirceanton.docker_swarm_portainer` role 🚀
