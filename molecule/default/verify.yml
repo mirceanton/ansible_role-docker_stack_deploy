@@ -5,8 +5,25 @@
   hosts: all
   gather_facts: false
 
-  vars_files:
-    - ../../vars/main.yml
+  vars:
+    docker_stack_deploy_name: example
+    docker_stack_deploy_state: present
+    docker_stack_deploy_root_dir_path: /opt/example
+    docker_stack_deploy_root_dir_mode: "0777"
+    docker_stack_deploy_root_dir_state: directory
+    docker_stack_deploy_root_dir_owner: root
+    docker_stack_deploy_root_dir_group: root
+    docker_stack_deploy_additional_dirs:
+      - path: data
+        mode: "0777"
+    docker_stack_deploy_template_files:
+      - src: test-file.yml.j2
+        dest: docker-compose.yml
+        mode: "0700"
+    docker_stack_deploy_copy_files:
+      - src: test-file.html
+        dest: data/index.html
+        mode: "0770"
 
   tasks:
     - name: Make sure the root directory is created
@@ -37,6 +54,7 @@
       ansible.builtin.shell:
         cmd: docker stack ls | grep {{ docker_stack_deploy_name }} | wc -l
       register: __command__
+      changed_when: false
     - ansible.builtin.assert:
         that: __command__.stdout == "1"
 
