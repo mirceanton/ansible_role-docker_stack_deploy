@@ -1,53 +1,48 @@
-# ---
-# The name of the stack to deploy.
-# The argument that would have been passed to the docker stack deploy command.
-docker_stack_deploy_name: example
+---
+# # The name of the stack to deploy.
+# # The argument that would have been passed to the docker stack deploy command.
+# docker_stack_deploy_name: example
 
-# The state of the stack to deploy.
-# Generally, this should be set to `present`.
-# Set it to `absent` to do a docker stack rm.
-docker_stack_deploy_state: present
+# # The state of the stack to deploy.
+# # Generally, this should be set to `present`.
+# # Set it to `absent` to do a docker stack rm.
+# docker_stack_deploy_state: present
 
-# The path of the root data directory of the application.
-# The role will expect the docker-compose.yml file to be here
-docker_stack_deploy_root_dir_path: /opt/example
+# # The path of the root data directory of the application.
+# # The role will expect the docker-compose.yml file to be here
+# docker_stack_deploy_root_dir_path: /opt/example
 
-# The state of the root directory.
-# Generally, this should be set to `directory`.
-# Set it to `absent` to delete it.
-docker_stack_deploy_root_dir_state: directory
+# # The state of the root directory.
+# # Generally, this should be set to `directory`.
+# # Set it to `absent` to delete it.
+# docker_stack_deploy_root_dir_state: directory
 
-# The user and group owners of the root dir
-# Equivalent of the arguments passed to `chown`
-docker_stack_deploy_root_dir_owner: root
-docker_stack_deploy_root_dir_group: root
+# # The user and group owners of the root dir
+# # Equivalent of the arguments passed to `chown`
+# docker_stack_deploy_root_dir_owner: root
+# docker_stack_deploy_root_dir_group: root
 
-# The permissions of the root data directory of the application.
-# Equivalent to the arguments passed to `chmod``
-docker_stack_deploy_root_dir_mode: "0777"
+# # The permissions of the root data directory of the application.
+# # Equivalent to the arguments passed to `chmod``
 
-# Any additional directories that might need to be created.
-# Object structure: "{ path: ..., mode: ... }"
-# Additionally, owner and group params can be set.
-# NOTE: The path is taken as relative to the docker_stack_deploy_root_dir_path
-docker_stack_deploy_additional_dirs:
-  - path: data
-    mode: "0777"
+# # Any additional directories that might need to be created.
+# # Object structure: "{ path: ..., mode: ... }"
+# # Additionally, owner and group params can be set.
+# # NOTE: The path is taken as relative to the docker_stack_deploy_root_dir_path
+# docker_stack_deploy_additional_dirs:
+#   - path: data
+#     mode: "0777"
 
-# Any additional files that might need to be copied over.
-# Object structure: "{ src: ..., dst: ..., mode: ... }"
-# Additionally, owner and group params can be set.
-# NOTE: The dst is taken as relative to the docker_stack_deploy_root_dir_path
-docker_stack_deploy_copy_files:
-  - src: test-file.html
-    dest: data/index.html
-    mode: "0770"
+# # Any additional files that might need to be copied over.
+# # Object structure: "{ src: ..., dst: ..., mode: ... }"
+# # Additionally, owner and group params can be set.
+# # NOTE: The dst is taken as relative to the docker_stack_deploy_root_dir_path
 
-# Any additional files that might need to be templated over.
-# Object structure: "{ src: ..., dst: ..., mode: ... }"
-# Additionally, owner and group params can be set.
-# NOTE: The dst is taken as relative to the docker_stack_deploy_root_dir_path
-docker_stack_deploy_template_files:
-  - src: test-file.yml.j2
-    dest: docker-compose.yml
-    mode: "0700"
+# # Any additional files that might need to be templated over.
+# # Object structure: "{ src: ..., dst: ..., mode: ... }"
+# # Additionally, owner and group params can be set.
+# # NOTE: The dst is taken as relative to the docker_stack_deploy_root_dir_path
+# docker_stack_deploy_template_files:
+#   - src: test-file.yml.j2
+#     dest: docker-compose.yml
+#     mode: "0700"
